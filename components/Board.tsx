@@ -49,13 +49,13 @@ export default function Board({
     });
   });
 
-  const cellPx = Math.max(36, Math.min(56, Math.floor(520 / Math.max(cols, rows))));
-
   return (
     <div
-      className="inline-grid border border-zinc-400 rounded overflow-hidden bg-zinc-50"
+      className="mx-auto grid w-full border border-zinc-400 rounded overflow-hidden bg-zinc-50"
       style={{
-        gridTemplateColumns: `repeat(${cols}, ${cellPx}px)`,
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        aspectRatio: `${cols} / ${rows}`,
+        maxWidth: `min(100%, calc((100dvh - 220px) * ${cols} / ${rows}))`,
       }}
     >
       {rowsCells.flat().map((square) => {
@@ -77,11 +77,10 @@ export default function Board({
             type="button"
             key={square}
             onClick={() => onSelectCell(isSelected ? null : square)}
-            className={`relative min-h-[36px] border border-zinc-200 flex flex-col items-stretch justify-between p-0.5 text-left transition-shadow
+            className={`relative aspect-square min-h-[36px] border border-zinc-200 flex flex-col items-stretch justify-between p-1 text-left transition-shadow
               ${cellBg}
               ${isSelected ? 'ring-2 ring-blue-500 ring-inset z-10' : 'hover:brightness-[0.98]'}
             `}
-            style={{ height: cellPx, minHeight: 36 }}
             aria-pressed={isSelected}
             aria-label={
               label
@@ -90,28 +89,28 @@ export default function Board({
             }
           >
             <div className="flex items-start justify-between gap-0.5">
-              <span className="text-[9px] text-zinc-500 leading-none tabular-nums">{square}</span>
+              <span className="text-[11px] text-zinc-500 leading-none tabular-nums">{square}</span>
               {hasNotes && (
                 <span
-                  className="shrink-0 w-1.5 h-1.5 rounded-full bg-indigo-500"
+                  className="shrink-0 w-2 h-2 rounded-full bg-indigo-500"
                   title="Has notes"
                 />
               )}
             </div>
             {label && (
-              <span className="text-[8px] leading-tight text-zinc-700 line-clamp-2 px-0.5">{label}</span>
+              <span className="text-[10px] leading-tight text-zinc-700 line-clamp-2 px-0.5">{label}</span>
             )}
             <div className="flex flex-col items-center gap-0 min-h-[14px] justify-end">
               {isNoGo && (
-                <span className="text-[8px] font-semibold text-zinc-700 leading-tight">No-go</span>
+                <span className="text-[10px] font-semibold text-zinc-700 leading-tight">No-go</span>
               )}
               {isLadder && (
-                <span className="text-[8px] font-semibold text-green-800 leading-tight">
+                <span className="text-[10px] font-semibold text-green-800 leading-tight">
                   Up→{ladders[square]}
                 </span>
               )}
               {isSlide && (
-                <span className="text-[8px] font-semibold text-red-800 leading-tight">
+                <span className="text-[10px] font-semibold text-red-800 leading-tight">
                   Down→{slides[square]}
                 </span>
               )}
@@ -122,7 +121,7 @@ export default function Board({
                 return (
                   <div
                     key={p.id}
-                    className={`w-3 h-3 rounded-full ${PLAYER_COLORS[ci]} ring-1 ${PLAYER_RING[ci]}`}
+                    className={`w-3.5 h-3.5 rounded-full ${PLAYER_COLORS[ci]} ring-1 ${PLAYER_RING[ci]}`}
                     title={p.name}
                   />
                 );

@@ -1,4 +1,4 @@
-import type { GameState } from '@/types/game';
+import type { GameState, Player } from '@/types/game';
 
 type PlayerPanelProps = {
   state: GameState;
@@ -15,44 +15,77 @@ const PLAYER_DOT = [
   'bg-lime-600',
 ] as const;
 
-export default function PlayerPanel({ state }: PlayerPanelProps) {
-  const { players, currentPlayerIndex, message, phase, winner } = state;
+function dotClass(playerId: number): string {
+  const i = ((playerId % PLAYER_DOT.length) + PLAYER_DOT.length) % PLAYER_DOT.length;
+  return PLAYER_DOT[i]!;
+}
+
+type PlayerCardProps = {
+  player: Player;
+  isActive: boolean;
+  isWinner: boolean;
+  compact: boolean;
+  message?: string;
+};
+
+function PlayerCard({ player, isActive, isWinner, compact, message }: PlayerCardProps) {
+  const stateClass = isWinner
+    ? 'border-[#f5e9c8]/70 bg-[#f5e9c8]/15'
+    : isActive
+      ? 'border-white/40 bg-white/10'
+      : 'border-white/10 bg-white/5';
 
   return (
-    <div className="flex min-w-[220px] flex-col gap-4">
-      {players.map((p, i) => {
-        const isActive = phase !== 'ended' && i === currentPlayerIndex;
-        const isWinner = phase === 'ended' && winner === p.id;
-        const ci = ((p.id % PLAYER_DOT.length) + PLAYER_DOT.length) % PLAYER_DOT.length;
-        return (
-          <div
-            key={p.id}
-            className={`p-3 rounded border ${
-              isWinner
-                ? 'border-[#f5e9c8]/70 bg-[#f5e9c8]/15'
-                : isActive
-                  ? 'border-white/40 bg-white/10'
-                  : 'border-white/10 bg-white/5'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full shrink-0 ${PLAYER_DOT[ci]}`} />
-              <span className={`font-medium text-sm ${isActive ? 'text-white' : 'text-white/65'}`}>
-                {p.name}
-              </span>
-              {isWinner && <span className="ml-auto text-sm font-semibold text-[#f5e9c8]">Winner!</span>}
-              {isActive && <span className="ml-auto text-xs text-white/45">your turn</span>}
-            </div>
-            <p className="text-xs text-white/45 mt-1 ml-5">
-              Square: <span className="font-semibold text-white/75">{p.position || '—'}</span>
-            </p>
-          </div>
-        );
-      })}
-
-      <div className="mt-1 p-3 rounded border border-white/10 bg-white/5">
-        <p className="text-xs text-white/70 leading-relaxed">{message}</p>
+    <div className={`rounded-xl border ${stateClass} ${compact ? 'p-2' : 'p-2.5'}`}>
+      <div className="flex items-center gap-2">
+        <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${dotClass(player.id)}`} />
+        <span
+          className={`min-w-0 flex-1 truncate text-sm font-medium ${
+            isActive || isWinner ? 'text-white' : 'text-white/65'
+          }`}
+        >
+          {player.name}
+        </span>
+        <span className="shrink-0 text-xs tabular-nums text-white/50">
+          {player.position || '—'}
+        </span>
       </div>
+      {!compact && isActive && !isWinner && (
+        <p className="mt-1 ml-[18px] text-[11px] uppercase tracking-[0.18em] text-white/45">
+          your turn
+        </p>
+      )}
+      {!compact && isWinner && (
+        <p className="mt-1 ml-[18px] text-[11px] uppercase tracking-[0.18em] text-[#f5e9c8]">
+          winner
+        </p>
+      )}
+      {!compact && isActive && !isWinner && message && (
+        <p className="mt-1.5 ml-[18px] text-xs leading-snug text-white/55">{message}</p>
+      )}
+    </div>
+  );
+}
+
+export default function PlayerPanel({ state }: PlayerPanelProps) {
+  const { players, currentPlayerIndex, message, phase, winner } = state;
+  const compact = players.length > 4;
+
+  return (
+    <div className={compact ? 'grid grid-cols-2 gap-2' : 'flex flex-col gap-2'}>
+      {players.map((p, i) => (
+        <PlayerCard
+          key={p.id}
+          player={p}
+          isActive={phase !== 'ended' && i === currentPlayerIndex}
+          isWinner={phase === 'ended' && winner === p.id}
+          compact={compact}
+          message={message}
+        />
+      ))}
+      {compact && message && (
+        <p className="col-span-2 mt-1 text-xs leading-snug text-white/55">{message}</p>
+      )}
     </div>
   );
 }

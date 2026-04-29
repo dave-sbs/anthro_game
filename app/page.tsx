@@ -10,7 +10,7 @@ export default function Home() {
 
         <div className="rounded-3xl border border-white/10 bg-white/5 p-6 space-y-5 text-lg text-white/72 leading-relaxed">
           <p>
-            This project uses the board game Snakes and Ladders to explore the built environment of the Colby College campus. Paths, setbacks, lifts, stairs, construction, snow—as a way to
+            This project uses the board game Snakes and Ladders to explore the built envjironment of the Colby College campus. Paths, setbacks, lifts, stairs, construction, snow, etc. every artifact of the campus as a way to
             hold collective memory. Each square stands for somewhere on campus. Slides represent the kinds of barriers people actually hit like ice, broken elevators, unclear routes. Ladders are the rare moments infrastructure works in your favor like an open door, a cleared ramp, a shuttle that waits for you.
           </p>
           <p>

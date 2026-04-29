@@ -26,12 +26,13 @@ const fallBoard = {
   },
   noGo: [33, 66],
   cellLabels: {
-    1: 'Main Gates',
-    10: 'Library',
-    25: 'Student Center',
-    50: 'Quad',
-    75: 'Science Center',
-    100: 'Commencement Lawn',
+    1: 'Miller Library',
+    10: 'Spa',
+    25: 'Diamond',
+    55: 'Hillside Dorms',
+    60: 'Dana Dining Hall',
+    75: 'The AC',
+    100: 'Gordon',
   },
 } satisfies SeasonBoardSpec;
 
