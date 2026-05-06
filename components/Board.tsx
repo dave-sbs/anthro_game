@@ -77,7 +77,7 @@ export default function Board({
             type="button"
             key={square}
             onClick={() => onSelectCell(isSelected ? null : square)}
-            className={`relative aspect-square min-h-[38px] border border-[var(--ink)]/20 flex flex-col items-stretch justify-between p-1.5 text-left transition
+            className={`relative aspect-square min-h-[38px] border border-[var(--ink)]/20 flex flex-col items-stretch justify-between px-1.5 py-1 text-left transition
               ${cellBg}
               ${isSelected ? 'z-10 ring-2 ring-[var(--ink)] ring-inset brightness-95' : 'hover:-translate-y-0.5 hover:brightness-[0.98]'}
             `}

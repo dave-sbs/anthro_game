@@ -17,7 +17,7 @@ export default function PlayStart() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--cream)] px-6 py-6 text-[var(--ink)]">
-      <div className="pointer-events-none absolute -right-36 top-20 h-96 w-96 rounded-full bg-[var(--lavender)]/45 blur-3xl" />
+      {/* <div className="pointer-events-none absolute -right-36 top-20 h-96 w-96 rounded-full bg-[var(--lavender)]/45 blur-3xl" /> */}
       <div className="pointer-events-none absolute -bottom-24 left-10 h-72 w-72 rounded-full border border-[var(--ink)]/15" />
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-3rem)] max-w-5xl flex-col">

@@ -88,7 +88,7 @@ export default function PlayGame() {
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span className="inline-block h-3 w-3 rounded-sm border border-[var(--ink)] bg-[var(--rose)]" />
-                slide
+                stair
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span className="inline-block h-3 w-3 rounded-sm border border-[var(--ink)] bg-[#d8d4c1]" />

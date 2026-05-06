@@ -10,19 +10,16 @@ const navItems = [
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--cream)] text-[var(--ink)]">
-      {/* <div className="pointer-events-none absolute -left-40 top-36 h-[520px] w-[520px] rounded-full border border-[var(--ink)]/15" /> */}
-      {/* <div className="pointer-events-none absolute -right-28 bottom-10 h-[360px] w-[360px] rounded-full bg-[var(--lavender)]/40 blur-3xl" /> */}
-      {/* <div className="pointer-events-none absolute left-1/2 top-[76%] h-20 w-[120vw] -translate-x-1/2 -rotate-6 rounded-full bg-[var(--ink)] shadow-2xl" /> */}
       <p className="pointer-events-none absolute left-1/2 top-[76%] w-[140vw] -translate-x-1/2 -rotate-6 whitespace-nowrap text-center text-lg font-semibold tracking-tight text-[var(--cream)]">
         roll the die, find the detour, leave a memory, follow the ramp, tell the story
       </p>
 
       <header className="relative z-10 mx-auto flex w-[min(92vw,920px)] items-center justify-between rounded-xl border border-[var(--ink)]/15 bg-[var(--cream-card)]/75 px-4 py-2.5 shadow-sm backdrop-blur-md md:mt-5">
-        <Link href="/" className="flex items-center gap-2 text-sm font-extrabold">
+        <Link href="/" className="flex items-end gap-2 text-sm font-extrabold">
           <span className="flex h-6 w-6 items-end gap-0.5">
             <span className="h-3 w-1.5 rounded-full bg-[var(--ink)]" />
-            <span className="h-5 w-1.5 rounded-full bg-[var(--ink)]" />
             <span className="h-4 w-1.5 rounded-full bg-[var(--ink)]" />
+            <span className="h-5 w-1.5 rounded-full bg-[var(--ink)]" />
           </span>
           Colby: Stairs and Ramps
         </Link>
@@ -102,7 +99,7 @@ export default function Home() {
           <div className="space-y-5 text-lg font-medium leading-relaxed text-[var(--ink)]/72">
             <p>
               This project uses Snakes and Ladders to explore the built environment of the Colby
-              College campus. Paths, setbacks, lifts, stairs, construction, and snow become a way
+              College campus. Paths, potholes, stairs, construction, and snow become a way
               to hold collective memory.
             </p>
             <p>
@@ -111,8 +108,8 @@ export default function Home() {
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               {[
-                ['Ramps', 'moments that move you forward'],
-                ['Slides', 'barriers that send you back'],
+                ['Ramps', 'shortcuts that move you forward'],
+                ['Stairs', 'barriers that force detours'],
                 ['No-go', 'places that block the route'],
               ].map(([title, body]) => (
                 <div key={title} className="rounded-2xl border-2 border-[var(--ink)] bg-[var(--cream-card)] p-4 shadow-[3px_3px_0_var(--ink)]">

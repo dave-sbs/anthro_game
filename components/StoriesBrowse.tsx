@@ -84,9 +84,6 @@ export default function StoriesBrowse() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--cream)] text-[var(--ink)]">
-      <div className="pointer-events-none absolute -right-28 top-24 h-80 w-80 rounded-full bg-[var(--lavender)]/45 blur-3xl" />
-      <div className="pointer-events-none absolute -left-20 bottom-20 h-80 w-80 rounded-full border border-[var(--ink)]/15" />
-
       <header className="relative z-10 px-6 py-6">
         <div className="mx-auto flex max-w-5xl flex-col gap-4 rounded-xl border border-[var(--ink)]/15 bg-[var(--cream-card)]/75 px-4 py-2.5 shadow-sm backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -162,13 +159,12 @@ export default function StoriesBrowse() {
             {stories.map((s, i) => (
               <li
                 key={s.story.id}
-                className={`rounded-3xl border-2 border-[var(--ink)] p-5 shadow-[4px_4px_0_var(--ink)] ${
-                  i % 3 === 0
-                    ? 'bg-[var(--lavender)]'
-                    : i % 3 === 1
-                      ? 'bg-[var(--sky)]'
-                      : 'bg-[var(--cream-card)]'
-                }`}
+                className={`rounded-3xl border-2 border-[var(--ink)] p-5 shadow-[4px_4px_0_var(--ink)] ${i % 3 === 0
+                  ? 'bg-[var(--lavender)]'
+                  : i % 3 === 1
+                    ? 'bg-[var(--sky)]'
+                    : 'bg-[var(--cream-card)]'
+                  }`}
               >
                 {s.story.image?.url && (
                   <img
