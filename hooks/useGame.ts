@@ -1,10 +1,9 @@
 'use client';
 
-import { useReducer, useEffect, useRef } from 'react';
-import type { GameState, GameAction, NotesStore, Player, SeasonConfig } from '@/types/game';
-import { DEFAULT_SEASON_ID, SEASONS, STORAGE_KEY_NOTES, STORAGE_KEY_UI, type PersistedUi } from '@/lib/game-data';
+import { useReducer, useEffect } from 'react';
+import type { GameState, GameAction, Player, SeasonConfig } from '@/types/game';
+import { DEFAULT_SEASON_ID, SEASONS, STORAGE_KEY_UI, type PersistedUi } from '@/lib/game-data';
 import { applyMove, computeEffectiveBoard, rollDice } from '@/lib/game-logic';
-import { notifyCampusNotesCommitted, readNotesFromLocalStorage } from '@/lib/read-notes';
 
 const MAX_PLAYERS = 8;
 const MIN_PLAYERS = 2;
@@ -47,28 +46,12 @@ function loadUi(): PersistedUi {
   }
 }
 
-function saveNotes(notes: NotesStore) {
-  try {
-    localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notes));
-    notifyCampusNotesCommitted();
-  } catch {
-    /* ignore quota */
-  }
-}
-
-function saveUi(ui: PersistedUi) {
+function saveUi(ui: PersistedUi): void {
   try {
     localStorage.setItem(STORAGE_KEY_UI, JSON.stringify(ui));
   } catch {
     /* ignore */
   }
-}
-
-function newNoteId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-  return `n-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
 function initialGameState(): GameState {
@@ -84,7 +67,6 @@ function initialGameState(): GameState {
     winner: null,
     message: spawnMessage(defaultPlayers),
     selectedCell: null,
-    notes: {},
   };
 }
 
@@ -119,7 +101,6 @@ function reducer(state: GameState, action: GameAction): GameState {
         seasonId,
         boardRows,
         boardCols,
-        notes: action.notes,
       };
       if (typeof window !== 'undefined') {
         saveUi({ seasonId: next.seasonId, boardRows: next.boardRows, boardCols: next.boardCols });
@@ -212,41 +193,6 @@ function reducer(state: GameState, action: GameAction): GameState {
       return { ...state, players };
     }
 
-    case 'ADD_NOTE': {
-      const text = action.text.trim();
-      if (!text) return state;
-      const cellKey = String(action.cell);
-      const prevSeason = state.notes[action.seasonId] ?? {};
-      const prevCell = prevSeason[cellKey] ?? [];
-      const note = { id: newNoteId(), text, createdAt: Date.now() };
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.seasonId]: {
-            ...prevSeason,
-            [cellKey]: [...prevCell, note],
-          },
-        },
-      };
-    }
-
-    case 'DELETE_NOTE': {
-      const cellKey = String(action.cell);
-      const prevSeason = state.notes[action.seasonId];
-      if (!prevSeason) return state;
-      const prevCell = prevSeason[cellKey];
-      if (!prevCell) return state;
-      const filtered = prevCell.filter((n) => n.id !== action.noteId);
-      const nextSeason = { ...prevSeason };
-      if (filtered.length === 0) delete nextSeason[cellKey];
-      else nextSeason[cellKey] = filtered;
-      const nextNotes = { ...state.notes };
-      if (Object.keys(nextSeason).length === 0) delete nextNotes[action.seasonId];
-      else nextNotes[action.seasonId] = nextSeason;
-      return { ...state, notes: nextNotes };
-    }
-
     case 'ROLL': {
       if (state.phase === 'ended') return state;
       if (state.players.length < MIN_PLAYERS) return state;
@@ -293,27 +239,16 @@ function reducer(state: GameState, action: GameAction): GameState {
 
 export function useGame() {
   const [state, dispatch] = useReducer(reducer, undefined, initialGameState);
-  const notesSerializedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const notes = readNotesFromLocalStorage();
     const ui = loadUi();
-    notesSerializedRef.current = JSON.stringify(notes);
     dispatch({
       type: 'HYDRATE',
-      notes,
       boardRows: ui.boardRows ?? null,
       boardCols: ui.boardCols ?? null,
       seasonId: ui.seasonId,
     });
   }, []);
-
-  useEffect(() => {
-    const s = JSON.stringify(state.notes);
-    if (s === notesSerializedRef.current) return;
-    notesSerializedRef.current = s;
-    saveNotes(state.notes);
-  }, [state.notes]);
 
   return { state, dispatch };
 }

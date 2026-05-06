@@ -10,32 +10,34 @@ export default function HowItWorks() {
       <button
         type="button"
         onClick={() => dialogRef.current?.showModal()}
-        className="rounded-full border border-white/40 px-4 py-2 text-sm text-white transition-colors hover:bg-white/10"
+        className="rounded-xl border-2 border-[var(--ink)] bg-[var(--cream-card)] px-4 py-2 text-sm font-extrabold text-[var(--ink)] shadow-[2px_2px_0_var(--ink)] transition hover:-translate-y-0.5"
       >
         How it works
       </button>
 
       <dialog
         ref={dialogRef}
-        className="w-[min(92vw,520px)] rounded-2xl border border-white/10 bg-[#213329] p-0 text-white shadow-2xl backdrop:bg-black/60"
+        className="fixed inset-0 m-auto w-[min(92vw,560px)] rounded-3xl border-2 border-[var(--ink)] bg-[var(--cream)] p-0 text-[var(--ink)] shadow-[6px_6px_0_var(--ink)] backdrop:bg-black/45"
       >
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-white/50">Rules</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight">How the campus path works</h2>
+              <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-[var(--ink)]/50">Rules</p>
+              <h2 className="font-display mt-2 text-4xl font-medium leading-none tracking-[-0.04em]">
+                How the campus path works
+              </h2>
             </div>
             <form method="dialog">
               <button
                 type="submit"
-                className="rounded-full border border-white/20 px-3 py-1 text-sm text-white/70 hover:bg-white/10 hover:text-white"
+                className="rounded-xl border-2 border-[var(--ink)] bg-[var(--cream-card)] px-3 py-1 text-sm font-extrabold text-[var(--ink)] shadow-[2px_2px_0_var(--ink)] transition hover:-translate-y-0.5"
               >
                 Close
               </button>
             </form>
           </div>
 
-          <div className="mt-6 space-y-4 text-sm leading-relaxed text-white/75">
+          <div className="mt-6 grid gap-3 text-sm font-semibold leading-relaxed text-[var(--ink)]/72">
             <p>
               Players take turns rolling the die and moving across campus. You must land exactly on the final
               square to finish.
@@ -52,8 +54,8 @@ export default function HowItWorks() {
               Gray no-go zones are fully inaccessible. If a roll lands there, the player stays where they are.
             </p>
             <p>
-              Tap any square to add or read notes. Those stories are saved in this browser and can be browsed from
-              the stories page.
+              Tap any square to add or read stories. You can optionally attach one photo to show the place you are
+              describing, and shared stories can be browsed from the stories page.
             </p>
           </div>
         </div>

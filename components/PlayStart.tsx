@@ -16,48 +16,76 @@ export default function PlayStart() {
   }
 
   return (
-    <main className="min-h-screen bg-[#213329] px-6 py-10 text-white">
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-3xl flex-col justify-center">
-        <nav className="mb-10 flex flex-wrap gap-4 text-sm text-white/60">
-          <Link href="/" className="hover:text-white">
-            About
+    <main className="relative min-h-screen overflow-hidden bg-[var(--cream)] px-6 py-6 text-[var(--ink)]">
+      <div className="pointer-events-none absolute -right-36 top-20 h-96 w-96 rounded-full bg-[var(--lavender)]/45 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 left-10 h-72 w-72 rounded-full border border-[var(--ink)]/15" />
+
+      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-3rem)] max-w-5xl flex-col">
+        <nav className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[var(--ink)]/15 bg-[var(--cream-card)]/75 px-4 py-2.5 text-sm font-bold shadow-sm backdrop-blur-md">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-60">
+            <span className="flex h-5 w-5 items-end gap-0.5">
+              <span className="h-2.5 w-1.5 rounded-full bg-[var(--ink)]" />
+              <span className="h-4 w-1.5 rounded-full bg-[var(--ink)]" />
+              <span className="h-3 w-1.5 rounded-full bg-[var(--ink)]" />
+            </span>
+            Colby: Stairs and Ramps
           </Link>
-          <Link href="/stories" className="hover:text-white">
-            Browse stories
+          <Link href="/stories" className="hover:opacity-60">
+            Story wall
           </Link>
         </nav>
 
-        <p className="text-xs uppercase tracking-[0.3em] text-white/50">Choose your path</p>
-        <h1 className="mt-4 text-5xl font-semibold leading-none tracking-tight md:text-7xl">
-          How should this campus be crossed?
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/70">
-          Start with the authored campus layout, or pause first to choose a season, adjust the board when
-          available, and set up the players before anyone rolls.
-        </p>
+        <section className="flex flex-1 flex-col justify-center py-16">
+          <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-[var(--ink)]/45">
+            Choose your path
+          </p>
+          <h1 className="font-display mt-4 max-w-4xl text-6xl font-medium leading-[0.9] tracking-[-0.06em] md:text-8xl">
+            How should this campus be crossed?
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-[var(--ink)]/65">
+            Jump straight into the authored board, or set the scene first with a season, players, and
+            any board options before the first roll.
+          </p>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={startDefault}
-            className="rounded-2xl bg-[#f5e9c8] px-6 py-5 text-left text-[#213329] transition hover:brightness-95"
-          >
-            <span className="block text-xl font-semibold">Play with default layout</span>
-            <span className="mt-2 block text-sm leading-relaxed opacity-75">
-              Use the fall semester board, two players, and begin immediately.
-            </span>
-          </button>
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
+            <button
+              type="button"
+              onClick={startDefault}
+              className="group rounded-3xl border-2 border-[var(--ink)] bg-[var(--sky)] p-7 text-left shadow-[5px_5px_0_var(--ink)] transition hover:-translate-y-1"
+            >
+              <span className="block text-xs font-extrabold uppercase tracking-[0.24em] text-[var(--ink)]/50">
+                Fast start
+              </span>
+              <span className="font-display mt-4 block text-4xl font-medium tracking-[-0.04em]">
+                Play now
+              </span>
+              <span className="mt-4 block text-base font-semibold leading-relaxed text-[var(--ink)]/65">
+                Use the fall semester board, two players, and begin immediately.
+              </span>
+              <span className="mt-8 inline-flex rounded-full border-2 border-[var(--ink)] bg-[var(--cream-card)] px-4 py-2 text-sm font-extrabold shadow-[2px_2px_0_var(--ink)]">
+                Start rolling
+              </span>
+            </button>
 
-          <Link
-            href="/play/customize"
-            className="rounded-2xl border border-white/30 px-6 py-5 text-left text-white transition hover:bg-white/10"
-          >
-            <span className="block text-xl font-semibold">Customize layout</span>
-            <span className="mt-2 block text-sm leading-relaxed text-white/70">
-              Choose the season, player list, and configurable board dimensions before entering the game.
-            </span>
-          </Link>
-        </div>
+            <Link
+              href="/play/customize"
+              className="group rounded-3xl border-2 border-[var(--ink)] bg-[var(--lavender)] p-7 text-left shadow-[5px_5px_0_var(--ink)] transition hover:-translate-y-1"
+            >
+              <span className="block text-xs font-extrabold uppercase tracking-[0.24em] text-[var(--ink)]/50">
+                Set the scene
+              </span>
+              <span className="font-display mt-4 block text-4xl font-medium tracking-[-0.04em]">
+                Customize first
+              </span>
+              <span className="mt-4 block text-base font-semibold leading-relaxed text-[var(--ink)]/65">
+                Choose the season, player list, and configurable board dimensions before entering the game.
+              </span>
+              <span className="mt-8 inline-flex rounded-full border-2 border-[var(--ink)] bg-[var(--cream-card)] px-4 py-2 text-sm font-extrabold shadow-[2px_2px_0_var(--ink)]">
+                Open setup
+              </span>
+            </Link>
+          </div>
+        </section>
       </div>
     </main>
   );

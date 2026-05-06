@@ -135,7 +135,6 @@ export const SEASONS: SeasonConfig[] = [
 
 export const DEFAULT_SEASON_ID = 'fall';
 
-export const STORAGE_KEY_NOTES = 'anthro-campus-notes-v1';
 export const STORAGE_KEY_UI = 'anthro-campus-ui-v1';
 
 export type PersistedUi = {

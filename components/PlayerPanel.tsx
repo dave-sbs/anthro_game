@@ -30,38 +30,38 @@ type PlayerCardProps = {
 
 function PlayerCard({ player, isActive, isWinner, compact, message }: PlayerCardProps) {
   const stateClass = isWinner
-    ? 'border-[#f5e9c8]/70 bg-[#f5e9c8]/15'
+    ? 'border-[var(--ink)] bg-[var(--sun)] shadow-[3px_3px_0_var(--ink)]'
     : isActive
-      ? 'border-white/40 bg-white/10'
-      : 'border-white/10 bg-white/5';
+      ? 'border-[var(--ink)] bg-[var(--lavender)] shadow-[3px_3px_0_var(--ink)]'
+      : 'border-[var(--ink)] bg-[var(--cream-card)] shadow-[2px_2px_0_var(--ink)]';
 
   return (
-    <div className={`rounded-xl border ${stateClass} ${compact ? 'p-2' : 'p-2.5'}`}>
+    <div className={`rounded-2xl border-2 ${stateClass} ${compact ? 'p-2' : 'p-3'}`}>
       <div className="flex items-center gap-2">
         <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${dotClass(player.id)}`} />
         <span
-          className={`min-w-0 flex-1 truncate text-sm font-medium ${
-            isActive || isWinner ? 'text-white' : 'text-white/65'
+          className={`min-w-0 flex-1 truncate text-sm font-extrabold ${
+            isActive || isWinner ? 'text-[var(--ink)]' : 'text-[var(--ink)]/70'
           }`}
         >
           {player.name}
         </span>
-        <span className="shrink-0 text-xs tabular-nums text-white/50">
+        <span className="shrink-0 text-xs font-bold tabular-nums text-[var(--ink)]/50">
           {player.position || '—'}
         </span>
       </div>
       {!compact && isActive && !isWinner && (
-        <p className="mt-1 ml-[18px] text-[11px] uppercase tracking-[0.18em] text-white/45">
+        <p className="mt-1 ml-[18px] text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--ink)]/45">
           your turn
         </p>
       )}
       {!compact && isWinner && (
-        <p className="mt-1 ml-[18px] text-[11px] uppercase tracking-[0.18em] text-[#f5e9c8]">
+        <p className="mt-1 ml-[18px] text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--ink)]/60">
           winner
         </p>
       )}
       {!compact && isActive && !isWinner && message && (
-        <p className="mt-1.5 ml-[18px] text-xs leading-snug text-white/55">{message}</p>
+        <p className="mt-1.5 ml-[18px] text-xs font-semibold leading-snug text-[var(--ink)]/60">{message}</p>
       )}
     </div>
   );
@@ -84,7 +84,7 @@ export default function PlayerPanel({ state }: PlayerPanelProps) {
         />
       ))}
       {compact && message && (
-        <p className="col-span-2 mt-1 text-xs leading-snug text-white/55">{message}</p>
+        <p className="col-span-2 mt-1 text-xs font-semibold leading-snug text-[var(--ink)]/60">{message}</p>
       )}
     </div>
   );
