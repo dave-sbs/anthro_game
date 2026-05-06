@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Story } from '@/types/game';
+import type { Story, StoryImage } from '@/types/game';
 
 let cached: SupabaseClient | null = null;
 
@@ -26,10 +26,32 @@ export type StoryRow = {
   board_cols: number;
   text: string;
   hidden: boolean;
+  image_bucket: string | null;
+  image_path: string | null;
+  image_mime_type: StoryImage['mimeType'] | null;
+  image_size_bytes: number | null;
+  image_width: number | null;
+  image_height: number | null;
   created_at: string;
 };
 
-export function mapStoryRow(row: StoryRow): Story {
+export function mapStoryRow(row: StoryRow, imageUrl?: string): Story {
+  const image =
+    row.image_bucket &&
+    row.image_path &&
+    row.image_mime_type &&
+    row.image_size_bytes != null
+      ? {
+          bucket: row.image_bucket,
+          path: row.image_path,
+          mimeType: row.image_mime_type,
+          sizeBytes: row.image_size_bytes,
+          width: row.image_width,
+          height: row.image_height,
+          ...(imageUrl ? { url: imageUrl } : {}),
+        }
+      : undefined;
+
   return {
     id: row.id,
     seasonId: row.season_id,
@@ -37,6 +59,7 @@ export function mapStoryRow(row: StoryRow): Story {
     boardRows: row.board_rows,
     boardCols: row.board_cols,
     text: row.text,
+    ...(image ? { image } : {}),
     createdAt: new Date(row.created_at).getTime(),
   };
 }

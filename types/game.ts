@@ -1,3 +1,14 @@
+export type StoryImage = {
+  bucket: string;
+  path: string;
+  mimeType: 'image/jpeg' | 'image/png' | 'image/webp';
+  sizeBytes: number;
+  width: number | null;
+  height: number | null;
+  /** Short-lived signed URL returned by the API for visible stories. */
+  url?: string;
+};
+
 export type Story = {
   id: string;
   seasonId: string;
@@ -5,6 +16,7 @@ export type Story = {
   boardRows: number;
   boardCols: number;
   text: string;
+  image?: StoryImage;
   /** epoch ms */
   createdAt: number;
 };
