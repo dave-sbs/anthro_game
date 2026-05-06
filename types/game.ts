@@ -1,11 +1,13 @@
-export type CellNote = {
+export type Story = {
   id: string;
+  seasonId: string;
+  cellNumber: number;
+  boardRows: number;
+  boardCols: number;
   text: string;
+  /** epoch ms */
   createdAt: number;
 };
-
-/** seasonId -> cell number (string key) -> notes */
-export type NotesStore = Record<string, Record<string, CellNote[]>>;
 
 export type SeasonBoardSpec = {
   rows: number;
@@ -51,7 +53,7 @@ export type EffectiveBoard = {
 export type GameState = {
   seasons: SeasonConfig[];
   seasonId: string;
-  /** null = use active season’s default dimensions */
+  /** null = use active season's default dimensions */
   boardRows: number | null;
   boardCols: number | null;
   players: Player[];
@@ -61,18 +63,15 @@ export type GameState = {
   winner: number | null;
   message: string;
   selectedCell: number | null;
-  notes: NotesStore;
 };
 
 export type GameAction =
   | { type: 'ROLL' }
   | { type: 'RESET' }
-  | { type: 'HYDRATE'; notes: NotesStore; boardRows: number | null; boardCols: number | null; seasonId?: string }
+  | { type: 'HYDRATE'; boardRows: number | null; boardCols: number | null; seasonId?: string }
   | { type: 'SELECT_CELL'; cell: number | null }
   | { type: 'SET_SEASON'; seasonId: string }
   | { type: 'SET_BOARD_SIZE'; rows: number; cols: number }
   | { type: 'ADD_PLAYER' }
   | { type: 'REMOVE_PLAYER'; playerId: number }
-  | { type: 'RENAME_PLAYER'; playerId: number; name: string }
-  | { type: 'ADD_NOTE'; seasonId: string; cell: number; text: string }
-  | { type: 'DELETE_NOTE'; seasonId: string; cell: number; noteId: string };
+  | { type: 'RENAME_PLAYER'; playerId: number; name: string };

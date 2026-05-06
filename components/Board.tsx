@@ -51,7 +51,7 @@ export default function Board({
 
   return (
     <div
-      className="mx-auto grid w-full border border-zinc-400 rounded overflow-hidden bg-zinc-50"
+      className="mx-auto grid w-full overflow-hidden rounded-2xl border-2 border-[var(--ink)] bg-[var(--ink)]"
       style={{
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
         aspectRatio: `${cols} / ${rows}`,
@@ -68,18 +68,18 @@ export default function Board({
         const isSelected = selectedCell === square;
 
         let cellBg = 'bg-white';
-        if (isNoGo) cellBg = 'bg-zinc-300';
-        else if (isLadder) cellBg = 'bg-green-100';
-        else if (isSlide) cellBg = 'bg-red-100';
+        if (isNoGo) cellBg = 'bg-[#d8d4c1]';
+        else if (isLadder) cellBg = 'bg-[var(--mint)]';
+        else if (isSlide) cellBg = 'bg-[var(--rose)]';
 
         return (
           <button
             type="button"
             key={square}
             onClick={() => onSelectCell(isSelected ? null : square)}
-            className={`relative aspect-square min-h-[36px] border border-zinc-200 flex flex-col items-stretch justify-between p-1 text-left transition-shadow
+            className={`relative aspect-square min-h-[38px] border border-[var(--ink)]/20 flex flex-col items-stretch justify-between p-1.5 text-left transition
               ${cellBg}
-              ${isSelected ? 'ring-2 ring-blue-500 ring-inset z-10' : 'hover:brightness-[0.98]'}
+              ${isSelected ? 'z-10 ring-2 ring-[var(--ink)] ring-inset brightness-95' : 'hover:-translate-y-0.5 hover:brightness-[0.98]'}
             `}
             aria-pressed={isSelected}
             aria-label={
@@ -89,28 +89,28 @@ export default function Board({
             }
           >
             <div className="flex items-start justify-between gap-0.5">
-              <span className="text-[11px] text-zinc-500 leading-none tabular-nums">{square}</span>
+              <span className="text-[11px] font-extrabold leading-none text-[var(--ink)]/55 tabular-nums">{square}</span>
               {hasNotes && (
                 <span
-                  className="shrink-0 w-2 h-2 rounded-full bg-indigo-500"
+                  className="h-2.5 w-2.5 shrink-0 rounded-full border border-[var(--ink)] bg-[var(--lavender)]"
                   title="Has notes"
                 />
               )}
             </div>
             {label && (
-              <span className="text-[10px] leading-tight text-zinc-700 line-clamp-2 px-0.5">{label}</span>
+              <span className="line-clamp-2 px-0.5 text-[10px] font-bold leading-tight text-[var(--ink)]/70">{label}</span>
             )}
             <div className="flex flex-col items-center gap-0 min-h-[14px] justify-end">
               {isNoGo && (
-                <span className="text-[10px] font-semibold text-zinc-700 leading-tight">No-go</span>
+                <span className="text-[10px] font-extrabold leading-tight text-[var(--ink)]/70">No-go</span>
               )}
               {isLadder && (
-                <span className="text-[10px] font-semibold text-green-800 leading-tight">
+                <span className="text-[10px] font-extrabold leading-tight text-[var(--ink)]/75">
                   Up→{ladders[square]}
                 </span>
               )}
               {isSlide && (
-                <span className="text-[10px] font-semibold text-red-800 leading-tight">
+                <span className="text-[10px] font-extrabold leading-tight text-[var(--ink)]/75">
                   Down→{slides[square]}
                 </span>
               )}

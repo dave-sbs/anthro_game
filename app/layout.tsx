@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Crimson_Pro } from "next/font/google";
+import { EB_Garamond, Figtree } from "next/font/google";
 import "./globals.css";
 
-const crimsonPro = Crimson_Pro({
-  variable: "--font-crimson",
+const ebGaramond = EB_Garamond({
+  variable: "--font-serif-display",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const figtree = Figtree({
+  variable: "--font-sans-ui",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -23,9 +30,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${crimsonPro.variable} h-full antialiased`}
+      className={`${ebGaramond.variable} ${figtree.variable}`}
     >
-      <body className={`${crimsonPro.className} min-h-full flex flex-col`}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

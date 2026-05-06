@@ -3,12 +3,13 @@
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
 import Board from './Board';
-import CellNotesDrawer from './CellNotesDrawer';
+import CellStoriesDrawer from './CellStoriesDrawer';
 import Dice from './Dice';
 import HowItWorks from './HowItWorks';
 import PlayerPanel from './PlayerPanel';
 import { computeEffectiveBoard } from '@/lib/game-logic';
 import { usePlay } from '@/lib/play-context';
+import { useSeasonStories } from '@/lib/stories';
 import type { SeasonConfig } from '@/types/game';
 
 function getSeason(seasons: SeasonConfig[], seasonId: string): SeasonConfig {
@@ -26,20 +27,8 @@ export default function PlayGame() {
     [activeSeason, state.boardRows, state.boardCols],
   );
 
-  const cellsWithNotes = useMemo(() => {
-    const bySeason = state.notes[state.seasonId];
-    const s = new Set<number>();
-    if (!bySeason) return s;
-    for (const [key, list] of Object.entries(bySeason)) {
-      if (list?.length) s.add(Number(key));
-    }
-    return s;
-  }, [state.notes, state.seasonId]);
+  const { cellsWithStories, refetch: refetchStories } = useSeasonStories(state.seasonId);
 
-  const selectedNotes =
-    state.selectedCell != null
-      ? (state.notes[state.seasonId]?.[String(state.selectedCell)] ?? [])
-      : [];
   const selectedLabel =
     state.selectedCell != null ? effectiveBoard.cellLabels[state.selectedCell] : undefined;
 
@@ -47,48 +36,32 @@ export default function PlayGame() {
     dispatch({ type: 'SELECT_CELL', cell: null });
   }, [dispatch]);
 
-  const addNote = useCallback(
-    (text: string) => {
-      if (state.selectedCell == null) return;
-      dispatch({ type: 'ADD_NOTE', seasonId: state.seasonId, cell: state.selectedCell, text });
-    },
-    [dispatch, state.seasonId, state.selectedCell],
-  );
-
-  const deleteNote = useCallback(
-    (noteId: string) => {
-      if (state.selectedCell == null) return;
-      dispatch({ type: 'DELETE_NOTE', seasonId: state.seasonId, cell: state.selectedCell, noteId });
-    },
-    [dispatch, state.seasonId, state.selectedCell],
-  );
-
   return (
-    <main className="min-h-screen bg-[#213329] px-5 py-5 text-white md:px-8">
+    <main className="min-h-screen bg-[var(--cream)] px-5 py-5 text-[var(--ink)] md:px-8">
       <div className="mx-auto max-w-[1400px]">
-        <header className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-baseline gap-3 min-w-0">
-            <h1 className="text-lg font-semibold tracking-tight md:text-xl">Campus path</h1>
-            <span className="text-xs uppercase tracking-[0.24em] text-white/45">
+        <header className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--ink)]/15 bg-[var(--cream-card)]/75 px-4 py-2.5 shadow-sm backdrop-blur-md">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h1 className="font-display text-2xl font-medium tracking-[-0.04em] md:text-3xl">Campus path</h1>
+            <span className="text-xs font-extrabold uppercase tracking-[0.24em] text-[var(--ink)]/45">
               {activeSeason.name}
             </span>
           </div>
-          <nav className="flex items-center gap-1 text-sm text-white/65">
+          <nav className="flex flex-wrap items-center gap-1 text-sm font-bold text-[var(--ink)]/65">
             <Link
               href="/"
-              className="rounded-full px-3 py-1 hover:bg-white/10 hover:text-white"
+              className="rounded-full px-3 py-1 hover:bg-[var(--ink)]/10 hover:text-[var(--ink)]"
             >
               About
             </Link>
             <Link
               href="/play"
-              className="rounded-full px-3 py-1 hover:bg-white/10 hover:text-white"
+              className="rounded-full px-3 py-1 hover:bg-[var(--ink)]/10 hover:text-[var(--ink)]"
             >
               Start over
             </Link>
             <Link
               href="/stories"
-              className="rounded-full px-3 py-1 hover:bg-white/10 hover:text-white"
+              className="rounded-full px-3 py-1 hover:bg-[var(--ink)]/10 hover:text-[var(--ink)]"
             >
               Stories
             </Link>
@@ -98,36 +71,36 @@ export default function PlayGame() {
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_360px]">
           <section className="min-w-0">
-            <div className="overflow-x-auto rounded-xl bg-white p-2">
+            <div className="overflow-x-auto rounded-3xl border-2 border-[var(--ink)] bg-[var(--cream-card)] p-3 shadow-[5px_5px_0_var(--ink)]">
               <Board
                 players={state.players}
                 board={effectiveBoard}
                 selectedCell={state.selectedCell}
-                cellsWithNotes={cellsWithNotes}
+                cellsWithNotes={cellsWithStories}
                 onSelectCell={(cell) => dispatch({ type: 'SELECT_CELL', cell })}
               />
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/60">
+            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border-2 border-[var(--ink)] bg-[var(--cream-card)] px-4 py-3 text-xs font-bold text-[var(--ink)]/60 shadow-[3px_3px_0_var(--ink)]">
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-2.5 w-2.5 rounded-sm border border-green-200 bg-green-100" />
+                <span className="inline-block h-3 w-3 rounded-sm border border-[var(--ink)] bg-[var(--mint)]" />
                 ramp
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-2.5 w-2.5 rounded-sm border border-red-200 bg-red-100" />
+                <span className="inline-block h-3 w-3 rounded-sm border border-[var(--ink)] bg-[var(--rose)]" />
                 slide
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-2.5 w-2.5 rounded-sm border border-zinc-400 bg-zinc-300" />
+                <span className="inline-block h-3 w-3 rounded-sm border border-[var(--ink)] bg-[#d8d4c1]" />
                 no-go
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                has notes
+                <span className="inline-block h-2.5 w-2.5 rounded-full border border-[var(--ink)] bg-[var(--lavender)]" />
+                has stories
               </span>
               <span className="ml-auto">
                 Land exactly on{' '}
-                <span className="font-semibold text-white">{effectiveBoard.lastCell}</span> to finish.
+                <span className="font-extrabold text-[var(--ink)]">{effectiveBoard.lastCell}</span> to finish.
               </span>
             </div>
           </section>
@@ -135,7 +108,7 @@ export default function PlayGame() {
           <aside className="relative flex min-w-0 flex-col gap-4 lg:min-h-[520px]">
             <PlayerPanel state={state} />
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="rounded-3xl border-2 border-[var(--ink)] bg-[var(--sky)] p-4 shadow-[4px_4px_0_var(--ink)]">
               <Dice
                 value={state.diceValue}
                 phase={state.phase}
@@ -146,20 +119,21 @@ export default function PlayGame() {
                 <button
                   type="button"
                   onClick={() => dispatch({ type: 'RESET' })}
-                  className="mx-auto mt-3 block rounded-full border border-white/40 px-4 py-1.5 text-sm text-white hover:bg-white/10"
+                  className="mx-auto mt-3 block rounded-xl border-2 border-[var(--ink)] bg-[var(--cream-card)] px-4 py-1.5 text-sm font-extrabold shadow-[2px_2px_0_var(--ink)] transition hover:-translate-y-0.5"
                 >
                   New round
                 </button>
               )}
             </div>
 
-            <CellNotesDrawer
+            <CellStoriesDrawer
               selectedCell={state.selectedCell}
               selectedLabel={selectedLabel}
-              notes={selectedNotes}
+              seasonId={state.seasonId}
+              boardRows={effectiveBoard.rows}
+              boardCols={effectiveBoard.cols}
               onClose={closeDrawer}
-              onAddNote={addNote}
-              onDeleteNote={deleteNote}
+              onStoryAdded={refetchStories}
             />
           </aside>
         </div>
