@@ -13,13 +13,30 @@ export type PostStoryInput = {
 };
 
 async function readError(res: Response): Promise<string> {
+  const fallback = res.statusText
+    ? `Request failed with ${res.status} ${res.statusText}`
+    : `Request failed with ${res.status}`;
+  let text = '';
+
   try {
-    const j = (await res.json()) as { error?: string };
-    if (j.error) return j.error;
+    text = (await res.text()).trim();
   } catch {
-    /* ignore */
+    return fallback;
   }
-  return `Request failed with ${res.status}`;
+
+  if (!text) {
+    return fallback;
+  }
+
+  try {
+    const j = JSON.parse(text) as { error?: unknown; message?: unknown };
+    if (typeof j.error === 'string' && j.error.trim()) return j.error;
+    if (typeof j.message === 'string' && j.message.trim()) return j.message;
+  } catch {
+    return text;
+  }
+
+  return fallback;
 }
 
 export async function fetchSeasonStories(seasonId: string, signal?: AbortSignal): Promise<Story[]> {
