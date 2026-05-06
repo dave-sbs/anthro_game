@@ -54,8 +54,8 @@ export default function HowItWorks() {
               Gray no-go zones are fully inaccessible. If a roll lands there, the player stays where they are.
             </p>
             <p>
-              Tap any square to add or read notes. Those stories are saved in our database and can be browsed from
-              the stories page.
+              Tap any square to add or read stories. You can optionally attach one photo to show the place you are
+              describing, and shared stories can be browsed from the stories page.
             </p>
           </div>
         </div>

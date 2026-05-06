@@ -47,14 +47,14 @@ export default function StoriesBrowse() {
   const [tick, setTick] = useState<number>(0);
 
   const refetch = useCallback((): void => {
+    setLoading(true);
+    setError(null);
     setTick((t) => t + 1);
   }, []);
 
   useEffect(() => {
     const controller = new AbortController();
     let cancelled = false;
-    setLoading(true);
-    setError(null);
     Promise.all(SEASONS.map((s) => fetchSeasonStories(s.id, controller.signal)))
       .then((perSeason) => {
         if (cancelled) return;
@@ -170,6 +170,14 @@ export default function StoriesBrowse() {
                       : 'bg-[var(--cream-card)]'
                 }`}
               >
+                {s.story.image?.url && (
+                  <img
+                    src={s.story.image.url}
+                    alt={`Photo attached to story for square ${s.story.cellNumber}`}
+                    loading="lazy"
+                    className="mb-4 max-h-56 w-full rounded-2xl border-2 border-[var(--ink)] object-cover shadow-[2px_2px_0_var(--ink)]"
+                  />
+                )}
                 <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
                   <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--ink)]/50">
                     {s.seasonName}

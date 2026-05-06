@@ -9,6 +9,7 @@ export type PostStoryInput = {
   boardRows: number;
   boardCols: number;
   text: string;
+  image?: File | null;
 };
 
 async function readError(res: Response): Promise<string> {
@@ -50,10 +51,19 @@ export async function fetchSeasonCells(seasonId: string, signal?: AbortSignal): 
 }
 
 export async function postStory(input: PostStoryInput): Promise<Story> {
+  const body = new FormData();
+  body.set('seasonId', input.seasonId);
+  body.set('cellNumber', String(input.cellNumber));
+  body.set('boardRows', String(input.boardRows));
+  body.set('boardCols', String(input.boardCols));
+  body.set('text', input.text);
+  if (input.image) {
+    body.set('image', input.image);
+  }
+
   const res = await fetch('/api/stories', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
+    body,
   });
   if (!res.ok) {
     const err = new Error(await readError(res)) as Error & { status?: number };
@@ -79,14 +89,14 @@ export function useSeasonStories(seasonId: string): SeasonStoriesState {
   const [tick, setTick] = useState<number>(0);
 
   const refetch = useCallback((): void => {
+    setLoading(true);
+    setError(null);
     setTick((t) => t + 1);
   }, []);
 
   useEffect(() => {
     const controller = new AbortController();
     let cancelled = false;
-    setLoading(true);
-    setError(null);
     fetchSeasonStories(seasonId, controller.signal)
       .then((data) => {
         if (cancelled) return;

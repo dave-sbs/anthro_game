@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchCellStories, postStory } from '@/lib/stories';
 import type { Story } from '@/types/game';
 
@@ -27,6 +27,24 @@ function formatWhen(ts: number): string {
 }
 
 const TEXT_MAX = 1000;
+const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+const IMAGE_ACCEPT = 'image/jpeg,image/png,image/webp';
+
+function SelectedImagePreview({ file, alt }: { file: File; alt: string }) {
+  const previewUrl = useMemo(() => URL.createObjectURL(file), [file]);
+
+  useEffect(() => {
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
+
+  return (
+    <img
+      src={previewUrl}
+      alt={alt}
+      className="max-h-44 w-full rounded-2xl border-2 border-[var(--ink)] object-cover shadow-[2px_2px_0_var(--ink)]"
+    />
+  );
+}
 
 export default function CellStoriesDrawer({
   selectedCell,
@@ -41,14 +59,20 @@ export default function CellStoriesDrawer({
     cell: null,
     text: '',
   });
+  const [imageState, setImageState] = useState<{ cell: number | null; file: File | null }>({
+    cell: null,
+    file: null,
+  });
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const isOpen = selectedCell != null;
   const draft = draftState.cell === selectedCell ? draftState.text : '';
+  const selectedImage = imageState.cell === selectedCell ? imageState.file : null;
 
   const loadStories = useCallback(
     (cell: number, signal?: AbortSignal): Promise<void> => {
@@ -69,25 +93,29 @@ export default function CellStoriesDrawer({
     [seasonId],
   );
 
+  const closeAndClear = useCallback((): void => {
+    setImageState({ cell: selectedCell, file: null });
+    setImageError(null);
+    onClose();
+  }, [onClose, selectedCell]);
+
   useEffect(() => {
     if (selectedCell == null) {
-      setStories([]);
-      setLoadError(null);
       return;
     }
     const controller = new AbortController();
-    void loadStories(selectedCell, controller.signal);
+    void Promise.resolve().then(() => loadStories(selectedCell, controller.signal));
     return () => controller.abort();
   }, [selectedCell, loadStories]);
 
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') closeAndClear();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, onClose]);
+  }, [isOpen, closeAndClear]);
 
   const submit = useCallback(async (): Promise<void> => {
     if (selectedCell == null) return;
@@ -102,9 +130,12 @@ export default function CellStoriesDrawer({
         boardRows,
         boardCols,
         text,
+        image: selectedImage,
       });
       setStories((prev) => [story, ...prev]);
       setDraftState({ cell: selectedCell, text: '' });
+      setImageState({ cell: selectedCell, file: null });
+      setImageError(null);
       onStoryAdded?.();
     } catch (e: unknown) {
       const status = (e as { status?: number } | null)?.status;
@@ -116,7 +147,34 @@ export default function CellStoriesDrawer({
     } finally {
       setSubmitting(false);
     }
-  }, [draft, selectedCell, submitting, seasonId, boardRows, boardCols, onStoryAdded]);
+  }, [draft, selectedCell, submitting, seasonId, boardRows, boardCols, selectedImage, onStoryAdded]);
+
+  const handleImageChange = useCallback(
+    (file: File | null): void => {
+      if (selectedCell == null) return;
+      setImageError(null);
+
+      if (!file) {
+        setImageState({ cell: selectedCell, file: null });
+        return;
+      }
+
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        setImageState({ cell: selectedCell, file: null });
+        setImageError('Choose a JPG, PNG, or WebP image.');
+        return;
+      }
+
+      if (file.size > IMAGE_MAX_BYTES) {
+        setImageState({ cell: selectedCell, file: null });
+        setImageError('Choose an image 5 MB or smaller.');
+        return;
+      }
+
+      setImageState({ cell: selectedCell, file });
+    },
+    [selectedCell],
+  );
 
   if (!isOpen) return null;
 
@@ -143,7 +201,7 @@ export default function CellStoriesDrawer({
         </div>
         <button
           type="button"
-          onClick={onClose}
+          onClick={closeAndClear}
           aria-label="Close stories"
           className="shrink-0 rounded-xl border-2 border-[var(--ink)] bg-[var(--cream)] px-2.5 py-1 text-xs font-extrabold text-[var(--ink)] shadow-[2px_2px_0_var(--ink)] transition hover:-translate-y-0.5"
         >
@@ -177,6 +235,14 @@ export default function CellStoriesDrawer({
               key={s.id}
               className="rounded-2xl border-2 border-[var(--ink)] bg-white p-3 text-sm font-semibold text-[var(--ink)]/75 shadow-[2px_2px_0_var(--ink)]"
             >
+              {s.image?.url && (
+                <img
+                  src={s.image.url}
+                  alt={`Photo attached to story for square ${s.cellNumber}`}
+                  loading="lazy"
+                  className="mb-3 max-h-48 w-full rounded-xl border-2 border-[var(--ink)] object-cover"
+                />
+              )}
               <p className="leading-relaxed break-words">{s.text}</p>
               <p className="mt-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[var(--ink)]/40">
                 {formatWhen(s.createdAt)}
@@ -212,13 +278,47 @@ export default function CellStoriesDrawer({
             <span className="normal-case tracking-normal text-[var(--ink)]/70">{submitError}</span>
           )}
         </div>
+        <div className="mt-3 rounded-2xl border-2 border-dashed border-[var(--ink)]/25 bg-white/60 p-3">
+          <label className="flex flex-col gap-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[var(--ink)]/55">
+            Optional photo
+            <input
+              type="file"
+              accept={IMAGE_ACCEPT}
+              onChange={(e) => handleImageChange(e.currentTarget.files?.[0] ?? null)}
+              className="text-xs font-bold normal-case tracking-normal text-[var(--ink)] file:mr-3 file:rounded-lg file:border-2 file:border-[var(--ink)] file:bg-[var(--cream-card)] file:px-3 file:py-1 file:text-xs file:font-extrabold file:text-[var(--ink)]"
+            />
+          </label>
+          <p className="mt-2 text-[11px] font-semibold text-[var(--ink)]/50">
+            JPG, PNG, or WebP up to 5 MB. Photos must be attached to story text.
+          </p>
+          {selectedImage && (
+            <div className="mt-3 space-y-2">
+              <SelectedImagePreview
+                file={selectedImage}
+                alt={`Selected photo for square ${selectedCell}`}
+              />
+              <button
+                type="button"
+                onClick={() => handleImageChange(null)}
+                className="rounded-lg border-2 border-[var(--ink)] bg-[var(--cream)] px-3 py-1 text-xs font-extrabold shadow-[2px_2px_0_var(--ink)] transition hover:-translate-y-0.5"
+              >
+                Remove photo
+              </button>
+            </div>
+          )}
+          {imageError && (
+            <p className="mt-2 text-xs font-bold normal-case tracking-normal text-[var(--ink)]/70">
+              {imageError}
+            </p>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => void submit()}
           disabled={!draft.trim() || submitting || overLimit}
           className="mt-3 w-full rounded-xl border-2 border-[var(--ink)] bg-[var(--lavender)] px-4 py-2 text-sm font-extrabold text-[var(--ink)] shadow-[2px_2px_0_var(--ink)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
         >
-          {submitting ? 'Saving…' : 'Save story'}
+          {submitting ? (selectedImage ? 'Saving story and photo…' : 'Saving…') : 'Save story'}
         </button>
       </div>
     </div>
